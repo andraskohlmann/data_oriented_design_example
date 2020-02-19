@@ -27,7 +27,7 @@ static void ArrayOfStructs(int N) {
     vector<Person> v;
     fill_n(back_inserter(v), N, Person());
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         for (auto &i : v) {
             i.get_older();
         }
@@ -60,19 +60,19 @@ struct Components {
 
 static void StructOfArrays(int N) {
     Components struct_of_arrays(N);
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         struct_of_arrays.get_older();
     }
 }
 
 static int measure_runtime(void (*f)(int), int N) {
     auto start = high_resolution_clock::now();
-    for (int i = 0; i < 5; i++) f(N);
-    return duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 5;
+    for (int i = 0; i < 10; i++) f(N);
+    return duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 10;
 }
 
 int main() {
-    int N = 64;
+    int N = 1024;
     for (int i = 0; i < 8; ++i) {
         N = N << 1;
         std::cout << measure_runtime(ArrayOfStructs, N) << " vs ";
