@@ -24,18 +24,27 @@ struct Person : Organism {
     void get_older() { age++; }
 };
 
-static void ArrayOfStructs(int N) {
+static int ArrayOfStructs(int N) {
     vector<Person> v;
     fill_n(back_inserter(v), N, Person());
-
+    
+    auto start = high_resolution_clock::now();
     for (int i = 0; i < 1000; ++i) {
         for (auto &i : v) {
             i.get_older();
         }
     }
+    return duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 10;
 }
 
 struct Components {
+    vector<int> legs;
+    vector<int> arms;
+    vector<int> ages;
+    vector<float> heights;
+    vector<float> weights;
+    vector<std::string> names;
+
     Components(int N) {
         legs.resize(N, 2);
         arms.resize(N, 2);
@@ -50,40 +59,34 @@ struct Components {
             i++;
         }
     }
-
-    vector<int> legs;
-    vector<int> arms;
-    vector<int> ages;
-    vector<float> heights;
-    vector<float> weights;
-    vector<std::string> names;
 };
 
-static void StructOfArrays(int N) {
+static int StructOfArrays(int N) {
     Components struct_of_arrays(N);
+    auto start = high_resolution_clock::now();
     for (int i = 0; i < 1000; ++i) {
         struct_of_arrays.get_older();
     }
-}
-
-static int measure_runtime(void (*f)(int), int N) {
-    auto start = high_resolution_clock::now();
-    for (int i = 0; i < 10; i++) f(N);
     return duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 10;
 }
 
-int main() {
+static void print_runtimes(int (*f)(int)) {
     int N = 1024;
     for (int i = 0; i < 7; ++i) {
         N = N << 1;
-        std::cout << measure_runtime(StructOfArrays, N) << std::endl;
-    }
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    std::cout  << " vs " << std::endl;
-    N = 1024;
-    for (int i = 0; i < 7; ++i) {
-        N = N << 1;
+        int sum_time = 0;
+        for (int i = 0; i < 10; i++) sum_time += f(N);
         
-        std::cout << measure_runtime(ArrayOfStructs, N) << std::endl;
+        std::cout << sum_time / 10 << std::endl;
     }
+}
+
+int main() {
+    std::cout << "StructOfArrays" << std::endl;
+    print_runtimes(StructOfArrays);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    std::cout << "ArrayOfStructs" << std::endl;
+    print_runtimes(ArrayOfStructs);
+    return 0;
 }
