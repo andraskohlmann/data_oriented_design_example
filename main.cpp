@@ -3,6 +3,7 @@
 #include <vector>
 #include <chrono>
 #include <iostream>
+#include <thread>
 
 using std::back_inserter;
 using std::fill_n;
@@ -73,9 +74,16 @@ static int measure_runtime(void (*f)(int), int N) {
 
 int main() {
     int N = 1024;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 7; ++i) {
         N = N << 1;
-        std::cout << measure_runtime(ArrayOfStructs, N) << " vs ";
         std::cout << measure_runtime(StructOfArrays, N) << std::endl;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout  << " vs " << std::endl;
+    N = 1024;
+    for (int i = 0; i < 7; ++i) {
+        N = N << 1;
+        
+        std::cout << measure_runtime(ArrayOfStructs, N) << std::endl;
     }
 }
